@@ -3,16 +3,16 @@ package answers
 import "encoding/json"
 
 type PublicAnswer struct {
-	ID     int64 `json:"id"`
-	UserID int64 `json:"user_id"`
+	ID     int `json:"id"`
+	UserID int `json:"user_id"`
 }
 
 type PrivateAnswer struct {
-	ID         int64 `json:"id"`
-	UserID     int64 `json:"user_id"`
-	QuestionID int64 `json:"question_id"`
-	ChoiceID   int64 `json:"choice_id"`
-	IsRight    bool  `json:"is_right"`
+	ID         int  `json:"id"`
+	UserID     int  `json:"user_id"`
+	QuestionID int  `json:"question_id"`
+	ChoiceID   int  `json:"choice_id"`
+	IsRight    bool `json:"is_right"`
 }
 
 func (answers Answers) Marshall(isPublic bool) []interface{} {
