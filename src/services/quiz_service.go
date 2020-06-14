@@ -13,11 +13,11 @@ type quizService struct{}
 
 type quizServiceInterface interface {
 	CreateQuiz(quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
-	GetQuiz(int64) (*quiz.Quiz, rest_errors.RestErr)
+	GetQuiz(int) (*quiz.Quiz, rest_errors.RestErr)
 	GetAllQuiz() (quiz.Quizs, rest_errors.RestErr)
 	UpdateQuiz(bool, quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
-	DeleteQuiz(int64) rest_errors.RestErr
-	GetAllQuestionBySectionID(int64) (quiz.QuizsAndChoices, rest_errors.RestErr)
+	DeleteQuiz(int) rest_errors.RestErr
+	GetAllQuestionBySectionID(int) (quiz.QuizsAndChoices, rest_errors.RestErr)
 	GetAllChoiceByQuestionID(quiz *quiz.QuizAndChoice) rest_errors.RestErr
 }
 
@@ -39,7 +39,7 @@ func (s *quizService) CreateQuiz(quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestEr
 	return &quiz, nil
 }
 
-func (s *quizService) GetQuiz(quizID int64) (*quiz.Quiz, rest_errors.RestErr) {
+func (s *quizService) GetQuiz(quizID int) (*quiz.Quiz, rest_errors.RestErr) {
 	result := &quiz.Quiz{ID: quizID}
 	if err := result.Get(); err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (s *quizService) UpdateQuiz(isPartial bool, quiz quiz.Quiz) (*quiz.Quiz, re
 			current.Question = quiz.Question
 		}
 
-		if quiz.IsActive == true || quiz.IsActive == false {
+		if isActive >= 0 {
 			current.IsActive = quiz.IsActive
 		}
 	} else {
@@ -81,7 +81,7 @@ func (s *quizService) UpdateQuiz(isPartial bool, quiz quiz.Quiz) (*quiz.Quiz, re
 
 		current.Question = quiz.Question
 		current.IsActive = quiz.IsActive
-		current.SectionID = quiz.SectionID
+		current.ActivityID = quiz.ActivityID
 	}
 
 	if err := current.Update(isActive); err != nil {
@@ -91,14 +91,14 @@ func (s *quizService) UpdateQuiz(isPartial bool, quiz quiz.Quiz) (*quiz.Quiz, re
 	return current, nil
 }
 
-func (s *quizService) DeleteQuiz(quizID int64) rest_errors.RestErr {
+func (s *quizService) DeleteQuiz(quizID int) rest_errors.RestErr {
 	dao := &quiz.Quiz{ID: quizID}
 	return dao.Delete()
 }
 
-func (s *quizService) GetAllQuestionBySectionID(sectionID int64) (quiz.QuizsAndChoices, rest_errors.RestErr) {
-	dao := &quiz.QuizAndChoice{SectionID: sectionID}
-	allQuestion, err := dao.GetAllQuestionBySectionID()
+func (s *quizService) GetAllQuestionBySectionID(activityID int) (quiz.QuizsAndChoices, rest_errors.RestErr) {
+	dao := &quiz.QuizAndChoice{ActivityID: activityID}
+	allQuestion, err := dao.GetAllQuestionByActivityID()
 	if err != nil {
 		return nil, err
 	}

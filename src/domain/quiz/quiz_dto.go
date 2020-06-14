@@ -8,10 +8,10 @@ import (
 )
 
 type Quiz struct {
-	ID        int64  `json:"id"`
-	Question  string `json:"question"`
-	IsActive  bool   `json:"is_active"`
-	SectionID int64  `json:"section_id"`
+	ID         int    `json:"id"`
+	Question   string `json:"question"`
+	IsActive   bool   `json:"is_active"`
+	ActivityID int    `json:"activity_id"`
 }
 
 type Quizs []Quiz
@@ -26,8 +26,8 @@ func (quiz Quiz) Validate(isActive int) rest_errors.RestErr {
 		return rest_errors.NewBadRequestError("invalid status")
 	}
 
-	if quiz.SectionID <= 0 {
-		return rest_errors.NewBadRequestError("invalid section id")
+	if quiz.ActivityID <= 0 {
+		return rest_errors.NewBadRequestError("invalid activity id")
 	}
 
 	return nil

@@ -2,21 +2,15 @@ package quiz
 
 import (
 	"net/http"
-	"strconv"
 
+	"github.com/dzikrisyafi/kursusvirtual_oauth-go/oauth"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/domain/quiz"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/services"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/controller_utils"
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_errors"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_resp"
 	"github.com/gin-gonic/gin"
 )
-
-func getQuizId(quizIdParam string) (int64, rest_errors.RestErr) {
-	quizID, quizErr := strconv.ParseInt(quizIdParam, 10, 64)
-	if quizErr != nil {
-		return 0, rest_errors.NewBadRequestError("quiz id should be a number")
-	}
-	return quizID, nil
-}
 
 func Create(c *gin.Context) {
 	var quiz quiz.Quiz
@@ -32,11 +26,12 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	resp := rest_resp.NewStatusCreated("success create new quiz", result.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Get(c *gin.Context) {
-	quizID, idErr := getQuizId(c.Param("quiz_id"))
+	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz_id"), "quiz id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -48,7 +43,8 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, quiz)
+	resp := rest_resp.NewStatusOK("success get quiz data", quiz)
+	c.JSON(resp.Status(), resp)
 }
 
 func GetAll(c *gin.Context) {
@@ -58,11 +54,12 @@ func GetAll(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, quiz)
+	resp := rest_resp.NewStatusOK("success get quizs data", quiz.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Update(c *gin.Context) {
-	quizID, idErr := getQuizId(c.Param("quiz_id"))
+	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz_id"), "quiz id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -83,11 +80,12 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	resp := rest_resp.NewStatusOK("success update quiz data", result.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Delete(c *gin.Context) {
-	quizID, idErr := getQuizId(c.Param("quiz_id"))
+	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz id"), "quiz id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -102,7 +100,7 @@ func Delete(c *gin.Context) {
 }
 
 func GetAllBySectionID(c *gin.Context) {
-	sectionID, err := strconv.ParseInt(c.Param("section_id"), 10, 64)
+	sectionID, err := controller_utils.GetIDInt(c.Param("section_id"), "section id")
 	if err != nil {
 		restErr := rest_errors.NewBadRequestError("section id should be a number")
 		c.JSON(restErr.Status(), restErr)
@@ -115,5 +113,6 @@ func GetAllBySectionID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, questions)
+	resp := rest_resp.NewStatusOK("success update quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }

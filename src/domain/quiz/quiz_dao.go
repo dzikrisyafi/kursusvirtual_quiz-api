@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	queryInsertQuiz                = `INSERT INTO question(question, is_active, section_id) VALUES(?, ?, ?);`
-	queryGetQuiz                   = `SELECT question, is_active, section_id FROM question WHERE id=?;`
-	queryGetAllQuiz                = `SELECT id, question, is_active, section_id FROM question;`
-	queryUpdateQuiz                = `UPDATE question SET question=?, is_active=?, section_id=? WHERE id=?;`
-	queryDeleteQuiz                = `DELETE FROM question WHERE id=?;`
-	queryGetActiveQuiz             = `SELECT id, question, is_active, section_id FROM question WHERE is_active=1;`
-	queryGetAllQuestionBySectionID = `SELECT id, question FROM question WHERE section_id=? AND is_active=1;`
-	queryGetAllChoiceByQuestionID  = `SELECT id, choice, is_right FROM choices WHERE question_id=?;`
+	queryInsertQuiz                 = `INSERT INTO question(question, is_active, activity_id) VALUES(?, ?, ?);`
+	queryGetQuiz                    = `SELECT question, is_active, activity_id FROM question WHERE id=?;`
+	queryGetAllQuiz                 = `SELECT id, question, is_active, activity_id FROM question;`
+	queryUpdateQuiz                 = `UPDATE question SET question=?, is_active=?, activity_id=? WHERE id=?;`
+	queryDeleteQuiz                 = `DELETE FROM question WHERE id=?;`
+	queryGetActiveQuiz              = `SELECT id, question, is_active, activity_id FROM question WHERE is_active=1;`
+	queryGetAllQuestionByActivityID = `SELECT id, question FROM question WHERE activity_id=? AND is_active=1;`
+	queryGetAllChoiceByQuestionID   = `SELECT id, choice, is_right FROM choices WHERE question_id=?;`
 )
 
 func (quiz *Quiz) Save(isActive int) rest_errors.RestErr {
@@ -27,7 +27,7 @@ func (quiz *Quiz) Save(isActive int) rest_errors.RestErr {
 	}
 	defer stmt.Close()
 
-	insertResult, saveErr := stmt.Exec(quiz.Question, isActive, quiz.SectionID)
+	insertResult, saveErr := stmt.Exec(quiz.Question, isActive, quiz.ActivityID)
 	if saveErr != nil {
 		logger.Error("error when trying to save quiz", saveErr)
 		return rest_errors.NewInternalServerError("error when trying to save quiz", errors.New("database error"))
@@ -38,7 +38,7 @@ func (quiz *Quiz) Save(isActive int) rest_errors.RestErr {
 		logger.Error("error when trying to get last insert id after creating a new quiz", err)
 		return rest_errors.NewInternalServerError("error when trying to save quiz", errors.New("database error"))
 	}
-	quiz.ID = quizID
+	quiz.ID = int(quizID)
 
 	return nil
 }
@@ -53,7 +53,7 @@ func (quiz *Quiz) Get() rest_errors.RestErr {
 
 	var isactive int
 	result := stmt.QueryRow(quiz.ID)
-	if getErr := result.Scan(&quiz.Question, &isactive, &quiz.SectionID); getErr != nil {
+	if getErr := result.Scan(&quiz.Question, &isactive, &quiz.ActivityID); getErr != nil {
 		logger.Error("error when trying to get quiz by id", getErr)
 		return rest_errors.NewInternalServerError("error when trying to get quiz", errors.New("database error"))
 	}
@@ -85,7 +85,7 @@ func (quiz *Quiz) GetAllQuiz() ([]Quiz, rest_errors.RestErr) {
 	result := make([]Quiz, 0)
 	var isActive int
 	for rows.Next() {
-		if err := rows.Scan(&quiz.ID, &quiz.Question, &isActive, &quiz.SectionID); err != nil {
+		if err := rows.Scan(&quiz.ID, &quiz.Question, &isActive, &quiz.ActivityID); err != nil {
 			logger.Error("error when trying to scan quiz rows into quiz struct", err)
 			return nil, rest_errors.NewInternalServerError("error when trying to get all quiz", errors.New("database error"))
 		}
@@ -113,7 +113,7 @@ func (quiz *Quiz) Update(isActive int) rest_errors.RestErr {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(quiz.Question, isActive, quiz.SectionID, quiz.ID)
+	_, err = stmt.Exec(quiz.Question, isActive, quiz.ActivityID, quiz.ID)
 	if err != nil {
 		logger.Error("error when trying to update quiz", err)
 		return rest_errors.NewInternalServerError("error when trying to update user", errors.New("database error"))
@@ -138,17 +138,17 @@ func (quiz *Quiz) Delete() rest_errors.RestErr {
 	return nil
 }
 
-func (quiz *QuizAndChoice) GetAllQuestionBySectionID() ([]QuizAndChoice, rest_errors.RestErr) {
-	stmt, err := quiz_db.DbConn().Prepare(queryGetAllQuestionBySectionID)
+func (quiz *QuizAndChoice) GetAllQuestionByActivityID() ([]QuizAndChoice, rest_errors.RestErr) {
+	stmt, err := quiz_db.DbConn().Prepare(queryGetAllQuestionByActivityID)
 	if err != nil {
-		logger.Error("error when trying to prepare get all question by section id statement", err)
+		logger.Error("error when trying to prepare get all question by activity id statement", err)
 		return nil, rest_errors.NewInternalServerError("error when trying to get all question", errors.New("database error"))
 	}
 	defer stmt.Close()
 
-	rows, getErr := stmt.Query(quiz.SectionID)
+	rows, getErr := stmt.Query(quiz.ActivityID)
 	if getErr != nil {
-		logger.Error("error when trying to get all question by section id", getErr)
+		logger.Error("error when trying to get all question by activity id", getErr)
 		return nil, rest_errors.NewInternalServerError("error when trying to get all question", errors.New("database error"))
 	}
 	defer rows.Close()

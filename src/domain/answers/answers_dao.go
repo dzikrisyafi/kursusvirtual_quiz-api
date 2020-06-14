@@ -32,7 +32,7 @@ func (answer *Answer) Save(isRight int) rest_errors.RestErr {
 		logger.Error("error when trying to get last insert id after creating a new answer", err)
 		return rest_errors.NewInternalServerError("error when trying to save answer", errors.New("database error"))
 	}
-	answer.ID = answerID
+	answer.ID = int(answerID)
 
 	return nil
 }

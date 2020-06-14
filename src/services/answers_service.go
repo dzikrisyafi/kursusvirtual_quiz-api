@@ -14,7 +14,7 @@ type answerService struct{}
 
 type answerServiceInterface interface {
 	CreateAnswer(answers.Answer) (*answers.Answer, rest_errors.RestErr)
-	GetUserAnswer(int64, int) (answers.Answers, rest_errors.RestErr)
+	GetUserAnswer(int, int) (answers.Answers, rest_errors.RestErr)
 }
 
 func (s *answerService) CreateAnswer(answer answers.Answer) (*answers.Answer, rest_errors.RestErr) {
@@ -36,7 +36,7 @@ func (s *answerService) CreateAnswer(answer answers.Answer) (*answers.Answer, re
 	return &answer, nil
 }
 
-func (s *answerService) GetUserAnswer(userID int64, sectionID int) (answers.Answers, rest_errors.RestErr) {
+func (s *answerService) GetUserAnswer(userID int, sectionID int) (answers.Answers, rest_errors.RestErr) {
 	dao := &answers.Answer{UserID: userID}
 	return dao.Get(sectionID)
 }

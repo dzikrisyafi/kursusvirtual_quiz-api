@@ -13,9 +13,9 @@ type choiceService struct{}
 
 type choiceServiceInterface interface {
 	CreateChoice(choices.Choice) (*choices.Choice, rest_errors.RestErr)
-	GetChoice(int64) (*choices.Choice, rest_errors.RestErr)
+	GetChoice(int) (*choices.Choice, rest_errors.RestErr)
 	UpdateChoice(bool, choices.Choice) (*choices.Choice, rest_errors.RestErr)
-	DeleteChoice(int64) rest_errors.RestErr
+	DeleteChoice(int) rest_errors.RestErr
 }
 
 func (s *choiceService) CreateChoice(choice choices.Choice) (*choices.Choice, rest_errors.RestErr) {
@@ -37,7 +37,7 @@ func (s *choiceService) CreateChoice(choice choices.Choice) (*choices.Choice, re
 	return &choice, nil
 }
 
-func (s *choiceService) GetChoice(choiceID int64) (*choices.Choice, rest_errors.RestErr) {
+func (s *choiceService) GetChoice(choiceID int) (*choices.Choice, rest_errors.RestErr) {
 	result := &choices.Choice{ID: choiceID}
 	if err := result.Get(); err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (s *choiceService) UpdateChoice(isPartial bool, choice choices.Choice) (*ch
 			current.Choice = choice.Choice
 		}
 
-		if choice.IsRight == true || choice.IsRight == false {
+		if isRight >= 0 {
 			current.IsRight = choice.IsRight
 		}
 	} else {
@@ -84,7 +84,7 @@ func (s *choiceService) UpdateChoice(isPartial bool, choice choices.Choice) (*ch
 	return current, nil
 }
 
-func (s *choiceService) DeleteChoice(choiceID int64) rest_errors.RestErr {
+func (s *choiceService) DeleteChoice(choiceID int) rest_errors.RestErr {
 	dao := &choices.Choice{ID: choiceID}
 	return dao.Delete()
 }

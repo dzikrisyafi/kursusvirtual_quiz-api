@@ -8,10 +8,10 @@ import (
 )
 
 type Choice struct {
-	ID         int64  `json:"id"`
+	ID         int    `json:"id"`
 	Choice     string `json:"choice"`
 	IsRight    bool   `json:"is_right"`
-	QuestionID int64  `json:"question_id"`
+	QuestionID int    `json:"question_id"`
 }
 
 type Choices []Choice

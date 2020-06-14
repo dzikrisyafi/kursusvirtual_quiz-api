@@ -2,21 +2,15 @@ package choices
 
 import (
 	"net/http"
-	"strconv"
 
+	"github.com/dzikrisyafi/kursusvirtual_oauth-go/oauth"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/domain/choices"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/services"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/controller_utils"
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_errors"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_resp"
 	"github.com/gin-gonic/gin"
 )
-
-func getChoiceId(choiceIdParam string) (int64, rest_errors.RestErr) {
-	choiceID, choiceErr := strconv.ParseInt(choiceIdParam, 10, 64)
-	if choiceErr != nil {
-		return 0, rest_errors.NewBadRequestError("choice id should be a number")
-	}
-	return choiceID, nil
-}
 
 func Create(c *gin.Context) {
 	var choice choices.Choice
@@ -32,11 +26,12 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	resp := rest_resp.NewStatusCreated("success create new choice", result.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Get(c *gin.Context) {
-	choiceID, idErr := getChoiceId(c.Param("choice_id"))
+	choiceID, idErr := controller_utils.GetIDInt(c.Param("choice_id"), "choice id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -48,11 +43,12 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, choice)
+	resp := rest_resp.NewStatusOK("success get choice data", choice.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Update(c *gin.Context) {
-	choiceID, idErr := getChoiceId(c.Param("choice_id"))
+	choiceID, idErr := controller_utils.GetIDInt(c.Param("choice_id"), "choice id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -73,11 +69,12 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	resp := rest_resp.NewStatusOK("success update choice", result.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Delete(c *gin.Context) {
-	choiceID, idErr := getChoiceId(c.Param("choice_id"))
+	choiceID, idErr := controller_utils.GetIDInt(c.Param("choice_id"), "choice id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return

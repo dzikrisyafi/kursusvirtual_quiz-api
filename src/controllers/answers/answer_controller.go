@@ -1,13 +1,12 @@
 package answers
 
 import (
-	"net/http"
-	"strconv"
-
 	"github.com/dzikrisyafi/kursusvirtual_oauth-go/oauth"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/domain/answers"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/services"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/controller_utils"
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_errors"
+	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_resp"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,18 +24,19 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, result)
+	resp := rest_resp.NewStatusCreated("success save user answer", result.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
 
 func Get(c *gin.Context) {
-	userID, idErr := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userID, idErr := controller_utils.GetIDInt(c.Param("user_id"), "user id")
 	if idErr != nil {
 		restErr := rest_errors.NewBadRequestError("user id should be a number")
 		c.JSON(restErr.Status(), restErr)
 		return
 	}
 
-	sectionID, idErr := strconv.Atoi(c.Param("section_id"))
+	sectionID, idErr := controller_utils.GetIDInt(c.Param("section_id"), "section id")
 	if idErr != nil {
 		restErr := rest_errors.NewBadRequestError("section id should be a number")
 		c.JSON(restErr.Status(), restErr)
@@ -48,5 +48,6 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, answer.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success get user answer", answer.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
 }
