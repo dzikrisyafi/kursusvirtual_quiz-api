@@ -7,6 +7,7 @@ import (
 )
 
 func mapUrls() {
+	// quiz end point
 	router.POST("/quiz", quiz.Create)
 	router.GET("/quiz/:quiz_id", quiz.Get)
 	router.GET("/quiz", quiz.GetAll)
@@ -17,12 +18,14 @@ func mapUrls() {
 	router.GET("internal/quiz/:activity_id", quiz.GetAllByActivityID)
 	router.DELETE("/internal/quiz/:course_id", quiz.DeleteAll)
 
+	// choice end point
 	router.POST("/choice", choices.Create)
 	router.GET("/choice/:choice_id", choices.Get)
 	router.PUT("/choice/:choice_id", choices.Update)
 	router.PATCH("/choice/:choice_id", choices.Update)
 	router.DELETE("/choice/:choice_id", choices.Delete)
 
+	// answer end point
 	router.POST("/answer", answers.Create)
 	router.GET("/answer/:user_id/:activity_id", answers.Get)
 }

@@ -19,7 +19,7 @@ type quizServiceInterface interface {
 	GetAllChoiceByQuestionID(quiz *quiz.QuizAndChoice) rest_errors.RestErr
 	UpdateQuiz(bool, quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
 	DeleteQuiz(int) rest_errors.RestErr
-	DeleteQuestionByActivityID(int) rest_errors.RestErr
+	DeleteQuestionByCourseID(int) rest_errors.RestErr
 }
 
 func (s *quizService) CreateQuiz(quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr) {
@@ -120,7 +120,7 @@ func (s *quizService) DeleteQuiz(quizID int) rest_errors.RestErr {
 	return dao.Delete()
 }
 
-func (s *quizService) DeleteQuestionByActivityID(activityID int) rest_errors.RestErr {
-	dao := &quiz.Quiz{ActivityID: activityID}
-	return dao.DeleteQuestionByActivityID()
+func (s *quizService) DeleteQuestionByCourseID(courseID int) rest_errors.RestErr {
+	dao := &quiz.Quiz{CourseID: courseID}
+	return dao.DeleteQuestionByCourseID()
 }

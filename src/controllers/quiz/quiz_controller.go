@@ -118,13 +118,13 @@ func Delete(c *gin.Context) {
 }
 
 func DeleteAll(c *gin.Context) {
-	activityID, idErr := controller_utils.GetIDInt(c.Param("course_id"), "course id")
+	courseID, idErr := controller_utils.GetIDInt(c.Param("course_id"), "course id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
 	}
 
-	if err := services.QuizService.DeleteQuestionByActivityID(activityID); err != nil {
+	if err := services.QuizService.DeleteQuestionByCourseID(courseID); err != nil {
 		c.JSON(err.Status(), err)
 		return
 	}

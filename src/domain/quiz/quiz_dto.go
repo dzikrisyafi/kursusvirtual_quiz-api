@@ -12,6 +12,7 @@ type Quiz struct {
 	Question   string `json:"question"`
 	IsActive   bool   `json:"is_active"`
 	ActivityID int    `json:"activity_id"`
+	CourseID   int    `json:"course_id"`
 }
 
 type Quizs []Quiz
