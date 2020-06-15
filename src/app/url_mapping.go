@@ -15,7 +15,7 @@ func mapUrls() {
 	router.DELETE("/quiz/:quiz_id", quiz.Delete)
 
 	router.GET("internal/quiz/:activity_id", quiz.GetAllByActivityID)
-	router.DELETE("/internal/quiz/:activity_id", quiz.DeleteAll)
+	router.DELETE("/internal/quiz/:course_id", quiz.DeleteAll)
 
 	router.POST("/choice", choices.Create)
 	router.GET("/choice/:choice_id", choices.Get)

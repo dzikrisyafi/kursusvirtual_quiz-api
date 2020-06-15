@@ -118,7 +118,7 @@ func Delete(c *gin.Context) {
 }
 
 func DeleteAll(c *gin.Context) {
-	activityID, idErr := controller_utils.GetIDInt(c.Param("activity_id"), "activity id")
+	activityID, idErr := controller_utils.GetIDInt(c.Param("course_id"), "course id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
