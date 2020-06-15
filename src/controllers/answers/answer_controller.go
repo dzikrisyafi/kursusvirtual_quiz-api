@@ -36,13 +36,13 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	sectionID, idErr := controller_utils.GetIDInt(c.Param("section_id"), "section id")
+	activityID, idErr := controller_utils.GetIDInt(c.Param("activity_id"), "activity id")
 	if idErr != nil {
-		restErr := rest_errors.NewBadRequestError("section id should be a number")
+		restErr := rest_errors.NewBadRequestError("activity id should be a number")
 		c.JSON(restErr.Status(), restErr)
 	}
 
-	answer, getErr := services.AnswerService.GetUserAnswer(userID, sectionID)
+	answer, getErr := services.AnswerService.GetUserAnswer(userID, activityID)
 	if getErr != nil {
 		c.JSON(getErr.Status(), getErr)
 		return

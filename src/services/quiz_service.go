@@ -15,10 +15,11 @@ type quizServiceInterface interface {
 	CreateQuiz(quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
 	GetQuiz(int) (*quiz.Quiz, rest_errors.RestErr)
 	GetAllQuiz() (quiz.Quizs, rest_errors.RestErr)
+	GetAllQuestionByActivityID(int) (quiz.QuizsAndChoices, rest_errors.RestErr)
+	GetAllChoiceByQuestionID(quiz *quiz.QuizAndChoice) rest_errors.RestErr
 	UpdateQuiz(bool, quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
 	DeleteQuiz(int) rest_errors.RestErr
-	GetAllQuestionBySectionID(int) (quiz.QuizsAndChoices, rest_errors.RestErr)
-	GetAllChoiceByQuestionID(quiz *quiz.QuizAndChoice) rest_errors.RestErr
+	DeleteQuestionByActivityID(int) rest_errors.RestErr
 }
 
 func (s *quizService) CreateQuiz(quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr) {
@@ -51,6 +52,29 @@ func (s *quizService) GetQuiz(quizID int) (*quiz.Quiz, rest_errors.RestErr) {
 func (s *quizService) GetAllQuiz() (quiz.Quizs, rest_errors.RestErr) {
 	dao := &quiz.Quiz{}
 	return dao.GetAllQuiz()
+}
+
+func (s *quizService) GetAllQuestionByActivityID(activityID int) (quiz.QuizsAndChoices, rest_errors.RestErr) {
+	dao := &quiz.QuizAndChoice{ActivityID: activityID}
+	allQuestion, err := dao.GetAllQuestionByActivityID()
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]quiz.QuizAndChoice, 0)
+	for _, question := range allQuestion {
+		if err := s.GetAllChoiceByQuestionID(&question); err != nil {
+			return nil, err
+		}
+		results = append(results, question)
+	}
+
+	return results, nil
+}
+
+func (s *quizService) GetAllChoiceByQuestionID(question *quiz.QuizAndChoice) rest_errors.RestErr {
+	dao := &quiz.Choice{}
+	return dao.GetAllChoiceByQuestionID(question)
 }
 
 func (s *quizService) UpdateQuiz(isPartial bool, quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr) {
@@ -96,25 +120,7 @@ func (s *quizService) DeleteQuiz(quizID int) rest_errors.RestErr {
 	return dao.Delete()
 }
 
-func (s *quizService) GetAllQuestionBySectionID(activityID int) (quiz.QuizsAndChoices, rest_errors.RestErr) {
-	dao := &quiz.QuizAndChoice{ActivityID: activityID}
-	allQuestion, err := dao.GetAllQuestionByActivityID()
-	if err != nil {
-		return nil, err
-	}
-
-	results := make([]quiz.QuizAndChoice, 0)
-	for _, question := range allQuestion {
-		if err := s.GetAllChoiceByQuestionID(&question); err != nil {
-			return nil, err
-		}
-		results = append(results, question)
-	}
-
-	return results, nil
-}
-
-func (s *quizService) GetAllChoiceByQuestionID(question *quiz.QuizAndChoice) rest_errors.RestErr {
-	dao := &quiz.Choice{}
-	return dao.GetAllChoiceByQuestionID(question)
+func (s *quizService) DeleteQuestionByActivityID(activityID int) rest_errors.RestErr {
+	dao := &quiz.Quiz{ActivityID: activityID}
+	return dao.DeleteQuestionByActivityID()
 }

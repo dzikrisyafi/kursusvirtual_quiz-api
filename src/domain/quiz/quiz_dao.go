@@ -12,11 +12,11 @@ const (
 	queryInsertQuiz                 = `INSERT INTO question(question, is_active, activity_id) VALUES(?, ?, ?);`
 	queryGetQuiz                    = `SELECT question, is_active, activity_id FROM question WHERE id=?;`
 	queryGetAllQuiz                 = `SELECT id, question, is_active, activity_id FROM question;`
-	queryUpdateQuiz                 = `UPDATE question SET question=?, is_active=?, activity_id=? WHERE id=?;`
-	queryDeleteQuiz                 = `DELETE FROM question WHERE id=?;`
-	queryGetActiveQuiz              = `SELECT id, question, is_active, activity_id FROM question WHERE is_active=1;`
 	queryGetAllQuestionByActivityID = `SELECT id, question FROM question WHERE activity_id=? AND is_active=1;`
 	queryGetAllChoiceByQuestionID   = `SELECT id, choice, is_right FROM choices WHERE question_id=?;`
+	queryUpdateQuiz                 = `UPDATE question SET question=?, is_active=?, activity_id=? WHERE id=?;`
+	queryDeleteQuiz                 = `DELETE FROM question WHERE id=?;`
+	queryDeleteQuizByActivityID     = `DELETE FROM question WHERE activity_id=?;`
 )
 
 func (quiz *Quiz) Save(isActive int) rest_errors.RestErr {
@@ -198,6 +198,22 @@ func (choice *Choice) GetAllChoiceByQuestionID(quiz *QuizAndChoice) rest_errors.
 		}
 
 		quiz.Choices = append(quiz.Choices, *choice)
+	}
+
+	return nil
+}
+
+func (quiz *Quiz) DeleteQuestionByActivityID() rest_errors.RestErr {
+	stmt, err := quiz_db.DbConn().Prepare(queryDeleteQuizByActivityID)
+	if err != nil {
+		logger.Error("error when trying to prepare delete question by activity id statement", err)
+		return rest_errors.NewInternalServerError("error when trying to delete question", errors.New("database error"))
+	}
+	defer stmt.Close()
+
+	if _, err := stmt.Exec(quiz.ActivityID); err != nil {
+		logger.Error("error when trying to delete question by activity id", err)
+		return rest_errors.NewInternalServerError("error when trying to delete question", errors.New("database error"))
 	}
 
 	return nil

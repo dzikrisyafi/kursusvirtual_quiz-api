@@ -58,6 +58,24 @@ func GetAll(c *gin.Context) {
 	c.JSON(resp.Status(), resp)
 }
 
+func GetAllByActivityID(c *gin.Context) {
+	activityID, err := controller_utils.GetIDInt(c.Param("activity_id"), "activity id")
+	if err != nil {
+		restErr := rest_errors.NewBadRequestError("activity id should be a number")
+		c.JSON(restErr.Status(), restErr)
+		return
+	}
+
+	questions, getErr := services.QuizService.GetAllQuestionByActivityID(activityID)
+	if getErr != nil {
+		c.JSON(getErr.Status(), getErr)
+		return
+	}
+
+	resp := rest_resp.NewStatusOK("success update quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
+	c.JSON(resp.Status(), resp)
+}
+
 func Update(c *gin.Context) {
 	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz_id"), "quiz id")
 	if idErr != nil {
@@ -85,7 +103,7 @@ func Update(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
-	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz id"), "quiz id")
+	quizID, idErr := controller_utils.GetIDInt(c.Param("quiz_id"), "quiz id")
 	if idErr != nil {
 		c.JSON(idErr.Status(), idErr)
 		return
@@ -99,20 +117,17 @@ func Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{"message": "success deleted quiz", "status": http.StatusOK})
 }
 
-func GetAllBySectionID(c *gin.Context) {
-	sectionID, err := controller_utils.GetIDInt(c.Param("section_id"), "section id")
-	if err != nil {
-		restErr := rest_errors.NewBadRequestError("section id should be a number")
-		c.JSON(restErr.Status(), restErr)
+func DeleteAll(c *gin.Context) {
+	activityID, idErr := controller_utils.GetIDInt(c.Param("activity_id"), "activity id")
+	if idErr != nil {
+		c.JSON(idErr.Status(), idErr)
 		return
 	}
 
-	questions, getErr := services.QuizService.GetAllQuestionBySectionID(sectionID)
-	if getErr != nil {
-		c.JSON(getErr.Status(), getErr)
+	if err := services.QuizService.DeleteQuestionByActivityID(activityID); err != nil {
+		c.JSON(err.Status(), err)
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success update quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
-	c.JSON(resp.Status(), resp)
+	c.JSON(http.StatusOK, map[string]interface{}{"message": "success deleted quiz", "status": http.StatusOK})
 }
