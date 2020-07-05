@@ -64,7 +64,7 @@ func (s *choiceService) UpdateChoice(isPartial bool, choice choices.Choice) (*ch
 			current.Choice = choice.Choice
 		}
 
-		if isRight >= 0 {
+		if isRight == 0 || isRight == 1 {
 			current.IsRight = choice.IsRight
 		}
 	} else {

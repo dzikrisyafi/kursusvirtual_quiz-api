@@ -11,7 +11,7 @@ import (
 const (
 	queryInsertQuiz                 = `INSERT INTO question(question, is_active, activity_id, course_id) VALUES(?, ?, ?, ?);`
 	queryGetQuiz                    = `SELECT question, is_active, activity_id, course_id FROM question WHERE id=?;`
-	queryGetAllQuiz                 = `SELECT id, question, is_active, activity_id FROM question;`
+	queryGetAllQuiz                 = `SELECT id, question, is_active, activity_id, course_id FROM question;`
 	queryGetAllQuestionByActivityID = `SELECT id, question FROM question WHERE activity_id=? AND is_active=1;`
 	queryGetAllChoiceByQuestionID   = `SELECT id, choice, is_right FROM choices WHERE question_id=?;`
 	queryUpdateQuiz                 = `UPDATE question SET question=?, is_active=?, activity_id=? WHERE id=?;`

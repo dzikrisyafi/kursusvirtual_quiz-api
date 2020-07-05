@@ -36,7 +36,7 @@ func (s *answerService) CreateAnswer(answer answers.Answer) (*answers.Answer, re
 	return &answer, nil
 }
 
-func (s *answerService) GetUserAnswer(userID int, sectionID int) (answers.Answers, rest_errors.RestErr) {
+func (s *answerService) GetUserAnswer(userID int, activityID int) (answers.Answers, rest_errors.RestErr) {
 	dao := &answers.Answer{UserID: userID}
-	return dao.Get(sectionID)
+	return dao.Get(activityID)
 }

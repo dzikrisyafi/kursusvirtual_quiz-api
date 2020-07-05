@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/domain/quiz"
+	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/repository/rest"
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_errors"
 )
 
@@ -19,7 +20,7 @@ type quizServiceInterface interface {
 	GetAllChoiceByQuestionID(quiz *quiz.QuizAndChoice) rest_errors.RestErr
 	UpdateQuiz(bool, quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr)
 	DeleteQuiz(int) rest_errors.RestErr
-	DeleteQuestionByCourseID(int) rest_errors.RestErr
+	DeleteQuestionByCourseID(int, string) rest_errors.RestErr
 }
 
 func (s *quizService) CreateQuiz(quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestErr) {
@@ -37,6 +38,7 @@ func (s *quizService) CreateQuiz(quiz quiz.Quiz) (*quiz.Quiz, rest_errors.RestEr
 	if err := quiz.Save(isActive); err != nil {
 		return nil, err
 	}
+
 	return &quiz, nil
 }
 
@@ -95,7 +97,7 @@ func (s *quizService) UpdateQuiz(isPartial bool, quiz quiz.Quiz) (*quiz.Quiz, re
 			current.Question = quiz.Question
 		}
 
-		if isActive >= 0 {
+		if isActive == 0 || isActive == 1 {
 			current.IsActive = quiz.IsActive
 		}
 	} else {
@@ -120,7 +122,12 @@ func (s *quizService) DeleteQuiz(quizID int) rest_errors.RestErr {
 	return dao.Delete()
 }
 
-func (s *quizService) DeleteQuestionByCourseID(courseID int) rest_errors.RestErr {
+func (s *quizService) DeleteQuestionByCourseID(courseID int, at string) rest_errors.RestErr {
 	dao := &quiz.Quiz{CourseID: courseID}
+
+	if err := rest.GradesRepository.DeleteGrades(courseID, at); err != nil {
+		return err
+	}
+
 	return dao.DeleteQuestionByCourseID()
 }

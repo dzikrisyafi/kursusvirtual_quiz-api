@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/logger"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,8 +11,9 @@ var (
 )
 
 func StartApplication() {
+	router.Use(cors.Default())
 	mapUrls()
 
 	logger.Info("start the application...")
-	router.Run(":8084")
+	router.Run(":8004")
 }

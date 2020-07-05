@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/dzikrisyafi/kursusvirtual_middleware/middleware"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/controllers/answers"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/controllers/choices"
 	"github.com/dzikrisyafi/kursusvirtual_quiz-api/src/controllers/quiz"
@@ -8,24 +9,40 @@ import (
 
 func mapUrls() {
 	// quiz end point
-	router.POST("/quiz", quiz.Create)
-	router.GET("/quiz/:quiz_id", quiz.Get)
-	router.GET("/quiz", quiz.GetAll)
-	router.PUT("/quiz/:quiz_id", quiz.Update)
-	router.PATCH("/quiz/:quiz_id", quiz.Update)
-	router.DELETE("/quiz/:quiz_id", quiz.Delete)
+	quizGroup := router.Group("/quiz")
+	quizGroup.Use(middleware.Auth())
+	{
+		quizGroup.POST("", quiz.Create)
+		quizGroup.GET("/:quiz_id", quiz.Get)
+		quizGroup.GET("", quiz.GetAll)
+		quizGroup.PUT("/:quiz_id", quiz.Update)
+		quizGroup.PATCH("/:quiz_id", quiz.Update)
+		quizGroup.DELETE("/:quiz_id", quiz.Delete)
+	}
 
-	router.GET("internal/quiz/:activity_id", quiz.GetAllByActivityID)
-	router.DELETE("/internal/quiz/:course_id", quiz.DeleteAll)
+	internalGroup := router.Group("/internal")
+	internalGroup.Use(middleware.Auth())
+	{
+		internalGroup.GET("/quiz/:activity_id", quiz.GetAllByActivityID)
+		internalGroup.DELETE("/quiz/:course_id", quiz.DeleteAll)
+	}
 
 	// choice end point
-	router.POST("/choice", choices.Create)
-	router.GET("/choice/:choice_id", choices.Get)
-	router.PUT("/choice/:choice_id", choices.Update)
-	router.PATCH("/choice/:choice_id", choices.Update)
-	router.DELETE("/choice/:choice_id", choices.Delete)
+	choicesGroup := router.Group("/choices")
+	choicesGroup.Use(middleware.Auth())
+	{
+		choicesGroup.POST("", choices.Create)
+		choicesGroup.GET("/:choice_id", choices.Get)
+		choicesGroup.PUT("/:choice_id", choices.Update)
+		choicesGroup.PATCH("/:choice_id", choices.Update)
+		choicesGroup.DELETE("/:choice_id", choices.Delete)
+	}
 
 	// answer end point
-	router.POST("/answer", answers.Create)
-	router.GET("/answer/:user_id/:activity_id", answers.Get)
+	answersGroup := router.Group("/answers")
+	answersGroup.Use(middleware.Auth())
+	{
+		answersGroup.POST("", answers.Create)
+		answersGroup.GET("/:user_id/:activity_id", answers.Get)
+	}
 }

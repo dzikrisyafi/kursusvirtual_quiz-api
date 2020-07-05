@@ -26,7 +26,7 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusCreated("success create new quiz", result.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusCreated("success created new quiz", result.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -54,7 +54,7 @@ func GetAll(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success get quizs data", quiz.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success get quiz data", quiz.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -72,7 +72,7 @@ func GetAllByActivityID(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success update quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success get quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -98,7 +98,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success update quiz data", result.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success updated quiz data", result.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -124,10 +124,8 @@ func DeleteAll(c *gin.Context) {
 		return
 	}
 
-	if err := services.QuizService.DeleteQuestionByCourseID(courseID); err != nil {
+	if err := services.QuizService.DeleteQuestionByCourseID(courseID, c.Query("access_token")); err != nil {
 		c.JSON(err.Status(), err)
 		return
 	}
-
-	c.JSON(http.StatusOK, map[string]interface{}{"message": "success deleted quiz", "status": http.StatusOK})
 }

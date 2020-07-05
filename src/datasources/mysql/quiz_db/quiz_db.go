@@ -13,9 +13,9 @@ import (
 var (
 	client *sql.DB
 
-	username = os.Getenv("mysql_username")
-	password = os.Getenv("mysql_password")
-	host     = os.Getenv("mysql_host")
+	username = os.Getenv("MYSQL_USER")
+	password = os.Getenv("MYSQL_PASSWORD")
+	host     = os.Getenv("MYSQL_HOST")
 	schema   = "quiz_db"
 )
 

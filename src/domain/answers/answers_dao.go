@@ -10,7 +10,7 @@ import (
 
 const (
 	queryInsertAnswer  = `INSERT INTO answer(user_id, question_id, choice_id, is_right, answer_time) VALUES(?, ?, ?, ?, ?);`
-	queryGetUserAnswer = `SELECT answer.id, user_id, question_id, choice_id, answer.is_right FROM answer INNER JOIN question ON question_id=question.id WHERE user_id=? AND section_id=? AND is_active=1;`
+	queryGetUserAnswer = `SELECT answer.id, user_id, question_id, choice_id, answer.is_right FROM answer INNER JOIN question ON question_id=question.id WHERE user_id=? AND activity_id=? AND is_active=1;`
 )
 
 func (answer *Answer) Save(isRight int) rest_errors.RestErr {
@@ -37,7 +37,7 @@ func (answer *Answer) Save(isRight int) rest_errors.RestErr {
 	return nil
 }
 
-func (answer *Answer) Get(sectionID int) ([]Answer, rest_errors.RestErr) {
+func (answer *Answer) Get(activityID int) ([]Answer, rest_errors.RestErr) {
 	stmt, err := quiz_db.DbConn().Prepare(queryGetUserAnswer)
 	if err != nil {
 		logger.Error("error when trying to prepare get user answer statement", err)
@@ -45,7 +45,7 @@ func (answer *Answer) Get(sectionID int) ([]Answer, rest_errors.RestErr) {
 	}
 	defer stmt.Close()
 
-	rows, getErr := stmt.Query(answer.UserID, sectionID)
+	rows, getErr := stmt.Query(answer.UserID, activityID)
 	if getErr != nil {
 		logger.Error("error when trying to get user answer", err)
 		return nil, rest_errors.NewInternalServerError("error when trying to get user answer", errors.New("database error"))

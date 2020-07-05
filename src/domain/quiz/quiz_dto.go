@@ -2,7 +2,6 @@ package quiz
 
 import (
 	"html"
-	"strings"
 
 	"github.com/dzikrisyafi/kursusvirtual_utils-go/rest_errors"
 )
@@ -18,7 +17,7 @@ type Quiz struct {
 type Quizs []Quiz
 
 func (quiz Quiz) Validate(isActive int) rest_errors.RestErr {
-	quiz.Question = html.EscapeString(strings.TrimSpace(quiz.Question))
+	quiz.Question = html.EscapeString(quiz.Question)
 	if quiz.Question == "" {
 		return rest_errors.NewBadRequestError("invalid question name")
 	}
@@ -29,6 +28,10 @@ func (quiz Quiz) Validate(isActive int) rest_errors.RestErr {
 
 	if quiz.ActivityID <= 0 {
 		return rest_errors.NewBadRequestError("invalid activity id")
+	}
+
+	if quiz.CourseID <= 0 {
+		return rest_errors.NewBadRequestError("invalid course id")
 	}
 
 	return nil
