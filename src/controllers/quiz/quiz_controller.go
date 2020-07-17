@@ -26,7 +26,7 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusCreated("success created new quiz", result.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusCreated("success created quiz", result.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -43,7 +43,7 @@ func Get(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success get quiz data", quiz)
+	resp := rest_resp.NewStatusOK("success get quiz", quiz)
 	c.JSON(resp.Status(), resp)
 }
 
@@ -54,7 +54,7 @@ func GetAll(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success get quiz data", quiz.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success get quiz", quiz.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -72,7 +72,7 @@ func GetAllByActivityID(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success get quiz data", questions.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success get quiz", questions.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 
@@ -98,7 +98,7 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	resp := rest_resp.NewStatusOK("success updated quiz data", result.Marshall(oauth.IsPublic(c.Request)))
+	resp := rest_resp.NewStatusOK("success updated quiz", result.Marshall(oauth.IsPublic(c.Request)))
 	c.JSON(resp.Status(), resp)
 }
 

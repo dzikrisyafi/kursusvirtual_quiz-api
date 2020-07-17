@@ -12,9 +12,9 @@ func mapUrls() {
 	quizGroup := router.Group("/quiz")
 	quizGroup.Use(middleware.Auth())
 	{
-		quizGroup.POST("", quiz.Create)
+		quizGroup.POST("/", quiz.Create)
 		quizGroup.GET("/:quiz_id", quiz.Get)
-		quizGroup.GET("", quiz.GetAll)
+		quizGroup.GET("/", quiz.GetAll)
 		quizGroup.PUT("/:quiz_id", quiz.Update)
 		quizGroup.PATCH("/:quiz_id", quiz.Update)
 		quizGroup.DELETE("/:quiz_id", quiz.Delete)
@@ -31,7 +31,7 @@ func mapUrls() {
 	choicesGroup := router.Group("/choices")
 	choicesGroup.Use(middleware.Auth())
 	{
-		choicesGroup.POST("", choices.Create)
+		choicesGroup.POST("/", choices.Create)
 		choicesGroup.GET("/:choice_id", choices.Get)
 		choicesGroup.PUT("/:choice_id", choices.Update)
 		choicesGroup.PATCH("/:choice_id", choices.Update)
@@ -42,7 +42,7 @@ func mapUrls() {
 	answersGroup := router.Group("/answers")
 	answersGroup.Use(middleware.Auth())
 	{
-		answersGroup.POST("", answers.Create)
+		answersGroup.POST("/", answers.Create)
 		answersGroup.GET("/:user_id/:activity_id", answers.Get)
 	}
 }
